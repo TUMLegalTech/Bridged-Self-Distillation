@@ -1,0 +1,12 @@
+{#- Purpose: BSD-hint self-teacher prompt (used for scoring only), conditioned on a hint of at most three sentences that ends with the verified final answer. -#}
+Problem: {{ problem }}
+
+Here is a hint for this problem, followed by its verified final answer:
+
+<hint>
+{{ pi_trace }}
+</hint>
+
+After reading the hint above, make sure you truly understand the idea it points to — do not copy or paraphrase it. Now, using your own words and independent reasoning, work out the solution and derive the same final answer to the problem above. Think step by step, explore different approaches, and don't be afraid to backtrack or reconsider if something doesn't work out:
+
+Please reason step by step, and put your final answer within \boxed{}.

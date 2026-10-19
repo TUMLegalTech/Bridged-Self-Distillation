@@ -1,0 +1,12 @@
+{#- Purpose: Self-teacher scoring prompt of the RLSD variant, conditioned on the ground-truth final answer. -#}
+Problem: {{ problem }}
+
+Here is a verified correct final answer to this problem:
+
+<reference_solution>
+{{ ground_truth }}
+</reference_solution>
+
+After reading the reference solution above, make sure you truly understand the reasoning behind each step — do not copy or paraphrase it. Now, using your own words and independent reasoning, derive the same final answer to the problem above. Think step by step, explore different approaches, and don't be afraid to backtrack or reconsider if something doesn't work out:
+
+Please reason step by step, and put your final answer within \boxed{}.

@@ -1,0 +1,13 @@
+Copyright 2023-2024 Bytedance Ltd. and/or its affiliates
+
+The cross-tokenizer OPD (xOPD) alignment and semantic-prior credit assignment
+in verl/trainer/bsd/cross_vocab_opd.py are adapted from
+ivanniu/On-Policy-Distill commit
+927a8264f2e303b7f82c2d331a58fd4240c8805a, licensed under Apache-2.0.
+The adapted source carries Copyright 2025 Individual Contributor: furunding.
+
+The rubric-based OPD (ROPD) implementation under third_party/ropd_official is
+vendored from Peregrine123/ROPD_official commit
+6b8d364de4e2cd02672c5d225295fda3bed82128, licensed under Apache-2.0.
+The licence text and the provenance record are in
+third_party/ropd_official/LICENSE and third_party/ropd_official/SOURCE.md.

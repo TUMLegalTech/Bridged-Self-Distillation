@@ -1,0 +1,148 @@
+profiles:
+  # OpenAI-compatible cloud endpoint (e.g. OpenAI / Azure / a private gateway).
+  # Set OPENAI_API_KEY and OPENAI_BASE_URL in your environment to use it.
+  openai_default:
+    provider: openai_compatible
+    backend: openai
+    api_key_env: OPENAI_API_KEY
+    base_url_env: OPENAI_BASE_URL
+    default_api_style: responses
+    transport:
+      # Bursty Cloudflare 520s from api.openai.com advertise retry_after=60;
+      # the backoff schedule must be able to span that window.
+      max_retries: 5
+      initial_backoff_seconds: 2.0
+      backoff_multiplier: 2.0
+      max_backoff_seconds: 75.0
+      max_in_flight_requests: 32
+    provider_limits:
+      max_concurrent_requests: 32
+      max_rpm: 1920
+      max_tpm: 6000000
+      circuit_breaker:
+        consecutive_retriable_errors: 5
+        rolling_window_size: 20
+        rolling_error_rate: 0.2
+        cooldown_seconds: 30
+        half_open_probe_requests: 2
+      stage_breakers:
+        teacher: {}
+        rubricator: {}
+        verifier: {}
+
+  # OpenRouter, an OpenAI-compatible gateway. It accepts both the responses
+  # endpoint and strict json_schema output, so the judge request shape is
+  # unchanged from openai_default -- only the gateway differs.
+  # Model ids must carry the provider prefix here (for example openai/<model>).
+  openrouter:
+    provider: openai_compatible
+    backend: openai
+    api_key_env: OPENROUTER_API_KEY
+    base_url: ${oc.env:OPENROUTER_BASE_URL,https://openrouter.ai/api/v1}
+    default_api_style: responses
+    transport:
+      max_retries: 5
+      initial_backoff_seconds: 2.0
+      backoff_multiplier: 2.0
+      max_backoff_seconds: 75.0
+      max_in_flight_requests: 32
+    provider_limits:
+      max_concurrent_requests: 32
+      max_rpm: 1920
+      max_tpm: 6000000
+      circuit_breaker:
+        consecutive_retriable_errors: 5
+        rolling_window_size: 20
+        rolling_error_rate: 0.2
+        cooldown_seconds: 30
+        half_open_probe_requests: 2
+      stage_breakers:
+        teacher: {}
+        rubricator: {}
+        verifier: {}
+
+  # Local vLLM judge served via OpenAI-compatible API.
+  # Start the vLLM server yourself and point ROPD_VLLM_BASE_URL at it.
+  local_vllm:
+    provider: openai_compatible
+    backend: vllm
+    api_key_env: ROPD_VLLM_API_KEY
+    base_url: ${oc.env:ROPD_VLLM_BASE_URL,http://127.0.0.1:18080/v1}
+    default_api_style: chat_completions
+    transport:
+      max_retries: 2
+      initial_backoff_seconds: 1.0
+      backoff_multiplier: 2.0
+      max_backoff_seconds: 8.0
+      max_in_flight_requests: 48
+    provider_limits:
+      max_concurrent_requests: 48
+      max_rpm: null
+      max_tpm: null
+
+roles:
+  # Teacher answers used as anchors for the shared rubric.
+  # During training we read pre-computed answers from a teacher index file
+  # (provider=offline_index). To rebuild the index online, point provider to
+  # openai_compatible and clear index_path.
+  teacher:
+    provider: offline_index
+    profile: openai_default
+    model: ${oc.env:ROPD_TEACHER_MODEL}
+    # Reasoning effort applies when the index is (re)built online. The 8192
+    # output budget matches the max-new-token budget of the teacher traces;
+    # reasoning tokens share it on reasoning models.
+    reasoning_effort: ${oc.env:ROPD_TEACHER_REASONING_EFFORT,none}
+    timeout_seconds: 300
+    max_output_tokens: 8192
+    temperature: null
+    top_p: null
+    index_path: ${oc.env:ROPD_TEACHER_INDEX_PATH,${oc.env:DATA_ROOT,datasets/unified}/${oc.env:ROPD_TRAIN_TASK,math/dapo-math-17k}/artifacts/teacher_index/shared-teacher-index.jsonl}
+
+  # Rubricator generates the shared rubric for each prompt.
+  # Defaults to the OpenAI-compatible cloud endpoint (`openai_default`); flip
+  # `profile` to `local_vllm` if you would rather use a self-hosted judge.
+  rubricator:
+    provider: openai_compatible
+    profile: openai_default
+    model: ${oc.env:ROPD_RUBRICATOR_MODEL}
+    # Pinned ROPD source defaults reasoning effort to "none"; keep that unless
+    # an experiment explicitly overrides it via the environment.
+    reasoning_effort: ${oc.env:ROPD_JUDGE_REASONING_EFFORT,none}
+    timeout_seconds: 120
+    max_output_tokens: 8192
+    temperature: null
+    top_p: null
+    response_retry:
+      schema_error_retries: 2
+      validation_error_retries: 2
+
+  # Verifier scores teacher and student answers against the shared rubric.
+  verifier:
+    provider: openai_compatible
+    profile: openai_default
+    model: ${oc.env:ROPD_VERIFIER_MODEL}
+    reasoning_effort: ${oc.env:ROPD_JUDGE_REASONING_EFFORT,none}
+    timeout_seconds: 60
+    max_output_tokens: 4096
+    temperature: null
+    top_p: null
+    response_retry:
+      empty_response_retries: 1
+      incomplete_retries: 1
+      parse_error_retries: 1
+      schema_error_retries: 1
+
+entrypoints:
+  build_teacher_index:
+    teacher:
+      provider: openai_compatible
+      index_path: null
+  train:
+    teacher:
+      provider: offline_index
+  validate:
+    teacher:
+      provider: openai_compatible
+      index_path: null
+      timeout_seconds: 45

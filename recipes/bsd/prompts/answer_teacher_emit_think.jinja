@@ -1,0 +1,12 @@
+{#- Purpose: Self-teacher scoring prompt of the RLSD variant, conditioned on the ground-truth final answer; version for Qwen3-4B-Instruct, whose last line asks for the reasoning inside the think tags. -#}
+Problem: {{ problem }}
+
+Here is a verified correct final answer to this problem:
+
+<reference_solution>
+{{ ground_truth }}
+</reference_solution>
+
+After reading the reference solution above, make sure you truly understand the reasoning behind each step — do not copy or paraphrase it. Now, using your own words and independent reasoning, derive the same final answer to the problem above. Think step by step, explore different approaches, and don't be afraid to backtrack or reconsider if something doesn't work out:
+
+Think through the problem step by step inside <think> and </think> tags. After </think>, give your final solution and put the final answer within \boxed{}.

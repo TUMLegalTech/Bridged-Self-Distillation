@@ -1,0 +1,53 @@
+# Python bytecode, caches and build artefacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+/build/
+/dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+/env/
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+
+# Credentials: copy .env.example to .env and fill it in. Only the template is tracked.
+.env
+.env.*
+!.env.example
+
+# Experiment tracking and logs
+wandb/
+*.log
+
+# Datasets and model weights
+*.parquet
+*.safetensors
+*.ckpt
+*.pt
+
+# Local storage. Datasets, model weights, checkpoints, outputs and caches live
+# under BSD_DATA_ROOT (default: ./workspace), the conda environments under
+# BSD_ENV_ROOT (default: ./workspace/conda_envs).
+# Every rule is anchored to the top level and has no trailing slash, so it
+# matches a directory or a symlink there and nothing deeper: package directories
+# such as verl/trainer/config/data/ stay tracked.
+/workspace
+/data
+/datasets
+/models
+/checkpoints
+/outputs
+/cache

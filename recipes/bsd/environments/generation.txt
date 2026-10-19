@@ -1,0 +1,13 @@
+# Offline generation stack. vLLM 0.16.0 is required for Nemotron-3-Nano-30B-A3B.
+torch==2.9.1
+vllm==0.16.0
+transformers==4.57.3
+accelerate==1.14.0
+math-verify==0.9.0
+msgpack==1.2.1
+pyzmq==27.1.0
+# Generation entrypoints import verl (prompt assembly), which needs these even
+# without the full training stack.
+tensordict==0.10.0
+omegaconf==2.3.1
+hydra-core==1.3.4

@@ -1,0 +1,12 @@
+{#- Purpose: BSD-guide self-teacher prompt (used for scoring only), conditioned on a step-by-step guide that ends with the verified final answer. -#}
+Problem: {{ problem }}
+
+Here is a step-by-step guide to this problem, followed by its verified final answer:
+
+<guide>
+{{ pi_trace }}
+</guide>
+
+After reading the guide above, make sure you truly understand why each step is needed — do not copy or paraphrase it. Now, using your own words and independent reasoning, carry out the steps and derive the same final answer to the problem above. Think step by step, explore different approaches, and don't be afraid to backtrack or reconsider if something doesn't work out:
+
+Please reason step by step, and put your final answer within \boxed{}.
