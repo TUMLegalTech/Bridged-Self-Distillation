@@ -226,7 +226,19 @@ field `pass` of their result files.
 
 ## Citation
 
-The citation will be added once the paper is on arXiv.
+If you use Bridged Self-Distillation or this repository in your research, please cite:
+
+```bibtex
+@misc{chen2026bridgedselfdistillationonpolicylearning,
+      title={Bridged Self-Distillation for On-Policy Learning}, 
+      author={Runsheng Chen and Yihong Liu and Raoyuan Zhao and Michael A. Hedderich and Hinrich Schütze and Matthias Grabmair},
+      year={2026},
+      eprint={2610.26397},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2610.26397}, 
+}
+```
 
 ## Acknowledgements
 
